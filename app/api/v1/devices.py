@@ -4,7 +4,9 @@ from typing import List, Optional
 from datetime import datetime
 
 from app.db.session import get_db
-from app.models import Device, SensorReading, Alert
+from app.models.device import Device
+from app.models.sensor_reading import SensorReading
+
 
 router = APIRouter(prefix="/devices", tags=["devices"])
 

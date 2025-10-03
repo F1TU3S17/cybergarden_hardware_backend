@@ -4,34 +4,30 @@ from typing import List, Optional
 from datetime import datetime
 
 from app.db.session import get_db
-from app.models import Device, Alert
+
 from app.api.enums.alert_status import AlertStatus
+from app.models.alert import Alert, BaseAlert
+from app.models.device import Device
 
 router = APIRouter(prefix="/alerts", tags=["alerts"])
 
 @router.post("/", status_code=201)
 def create_alert(
-    device_id: str,
-    alert_type: str,
-    message: str,
-    severity: Optional[str] = "medium",
+    create_alert: BaseAlert,
     db: Session = Depends(get_db)
 ):
     """
     Создать новое оповещение для устройства.
-    
-    Пример запроса:
-    POST /api/v1/alerts?device_id=abc123&alert_type=temperature&message=High+temp&severity=high
     """
-    device = db.query(Device).filter(Device.id == device_id).first()
+    device = db.query(Device).filter(Device.id == create_alert.device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     
     alert = Alert(
-        device_id=device_id,
-        alert_type=alert_type,
-        message=message,
-        severity=severity,
+        device_id=create_alert.device_id,
+        alert_type=create_alert.alert_type,
+        message=create_alert.message,
+        severity=create_alert.severity,
         status=AlertStatus.NEW.value
     )
     db.add(alert)

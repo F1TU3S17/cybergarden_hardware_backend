@@ -1,10 +1,12 @@
+from click import Command
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
 
 from app.db.session import get_db
-from app.models import Command, Device, SensorReading, Alert
+from app.models.device import Device
+
 
 router = APIRouter(prefix="/commands", tags=["commands"])
 
@@ -18,9 +20,6 @@ def create_command(
 ):
     """
     Создать новую команду для устройства.
-    
-    Пример запроса:
-    POST /api/v1/commands?device_id=abc123&command_type=restart&parameters={"delay":5}
     """
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:

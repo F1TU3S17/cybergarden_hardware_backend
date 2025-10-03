@@ -16,27 +16,3 @@ def get_user(db: Session, user_id: str):
     return user
 
 
-@router.post("/", status_code=201)
-def create_user(
-    username: str,
-    email: str,
-    full_name: Optional[str] = None,
-    db: Session = Depends(get_db)
-):
-    """
-    Создать нового пользователя.
-    
-    Пример запроса:
-    POST /
-    """
-    user = User(
-        username=username,
-        email=email,
-        full_name=full_name
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)  # обновить объект с данными из БД (id, created_at)
-    
-    return user
-

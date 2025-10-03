@@ -4,8 +4,9 @@ from typing import List, Optional
 from datetime import datetime
 
 from app.db.session import get_db
-from app.models import Device, Alert, User
+
 from app.api.enums.alert_status import AlertStatus
+from app.models.user import BaseUser, CreateUser, User
 from app.service.password_service import PasswordService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -13,18 +14,15 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/login")
 def login(
-    username: str,
-    password: str,
+    login_user: BaseUser,
     db: Session = Depends(get_db)
 ):
     """
     Аутентификация пользователя.
-    
-    Пример запроса:
-    POST /api/v1/auth/login?username=johndoe&password=secret
+
     """
-    user = db.query(User).filter(User.username == username).first()
-    if not user or not PasswordService.verify_password(password, user.password_hash):
+    user = db.query(User).filter(User.username == login_user.username).first()
+    if not user or not PasswordService.verify_password(login_user.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     # Здесь можно добавить генерацию и возврат JWT токена или сессии
@@ -32,27 +30,21 @@ def login(
 
 @router.post("/register", status_code=201)
 def register(
-    username: str,
-    email: str,
-    password: str,
-    full_name: Optional[str] = None,
+    create_user: CreateUser,
     db: Session = Depends(get_db)
 ):
     """
     Регистрация нового пользователя.
-    
-    Пример запроса:
-    POST /
+
     """
-    existing_user = db.query(User).filter(User.username == username).first()
+    existing_user = db.query(User).filter(User.username == create_user.username).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
     
     user = User(
-        username=username,
-        email=email,
-        full_name=full_name,
-        password_hash=password  # Здесь нужно захешировать пароль
+        username=create_user.username,
+        role=create_user.role,
+        password_hash=PasswordService.hash_password(create_user.password)   
     )
     db.add(user)
     db.commit()
