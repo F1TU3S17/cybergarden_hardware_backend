@@ -3,9 +3,10 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
 
+from app.api.enums.sensor_type import SensorType
 from app.db.session import get_db
 from app.models.device import Device
-from app.models.sensor_reading import SensorReading
+from app.models.sensor_reading import ReadingBase, SensorReading
 
 
 router = APIRouter(prefix="/devices", tags=["devices"])
@@ -156,10 +157,7 @@ def delete_device(device_id: str, db: Session = Depends(get_db)):
 
 @router.post("/{device_id}/readings")
 def add_reading(
-    device_id: str,
-    sensor_type: str,
-    value: float,
-    unit: str = "°C",
+    create_reading: ReadingBase,
     db: Session = Depends(get_db)
 ):
     """
@@ -169,15 +167,15 @@ def add_reading(
     POST /api/v1/devices/{id}/readings?sensor_type=temperature&value=23.5&unit=°C
     """
     # Проверить существование устройства
-    device = db.query(Device).filter(Device.id == device_id).first()
+    device = db.query(Device).filter(Device.id == create_reading.device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     
     reading = SensorReading(
-        device_id=device_id,
-        sensor_type=sensor_type,
-        value=value,
-        unit=unit
+        device_id=create_reading.device_id,
+        sensor_type=create_reading.sensor_type,
+        value=create_reading.value,
+        unit=create_reading.unit
     )
     db.add(reading)
     

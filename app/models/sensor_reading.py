@@ -1,4 +1,13 @@
+from pydantic import BaseModel
+from app.api.enums.sensor_type import SensorType
 from app.models.base import Base, Column, String, Float, DateTime, ForeignKey, datetime, gen_id, relationship
+
+
+class ReadingBase(BaseModel):
+    device_id: str
+    sensor_type: SensorType
+    value: float
+    unit: str
 
 
 class SensorReading(Base):
