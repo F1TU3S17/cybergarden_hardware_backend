@@ -72,7 +72,7 @@ class Alert(Base):
     severity = Column(String, nullable=True)  # Уровень важности (low, medium, high, critical)
     status = Column(String, nullable=True)  # Статус оповещения (new, in_progress, resolved, etc.)
     acknowledged = Column(Boolean, default=False)
-    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    timestamp = Column(DateTime, default=lambda: datetime.now())
 
     device = relationship("Device", back_populates="alerts")
 

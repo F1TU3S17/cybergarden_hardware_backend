@@ -53,7 +53,7 @@ class Device(Base):
     status = Column(String, nullable=True)
     last_seen = Column(DateTime, nullable=True)
     meta = Column(JSON, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now())
 
     # Отношения с каскадным удалением
     readings = relationship("SensorReading", back_populates="device", cascade="all, delete-orphan")

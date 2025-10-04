@@ -11,7 +11,7 @@ Variables:
 """
 
 from pydantic_settings import BaseSettings
-
+import pytz
 
 class Settings(BaseSettings):
     """Настройки приложения с загрузкой из переменных окружения.
