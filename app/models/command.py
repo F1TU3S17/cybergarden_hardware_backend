@@ -50,7 +50,7 @@ class Command(Base):
     action = Column(String, nullable=False)
     params = Column(JSON, nullable=True)
     status = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.now())
+    created_at = Column(DateTime, default=datetime.utcnow)
 
     device = relationship("Device", back_populates="commands")
 

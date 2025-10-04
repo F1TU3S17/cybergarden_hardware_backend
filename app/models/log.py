@@ -57,7 +57,7 @@ class Log(Base):
     id = Column(String, primary_key=True, default=gen_id)
     device_id = Column(String, ForeignKey("devices.id"), nullable=False)
     seq = Column(Integer, nullable=True)
-    timestamp = Column(DateTime, default=datetime.now())
+    timestamp = Column(DateTime, default=datetime.utcnow)
     type = Column(String, nullable=True)
     sensors = Column(JSON, nullable=True)
     actions = Column(JSON, nullable=True)

@@ -40,7 +40,7 @@ async def create_alert(
 @router.get("/{device_id}/alerts")
 async def get_device_alerts(
     device_id: str,
-    status: Optional[str] = Query(None, description="Фильтр по статусу"),
+    status: Optional[AlertStatus] = Query(None, description="Фильтр по статусу"),
     limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db)
 ):

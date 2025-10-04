@@ -76,7 +76,7 @@ class SensorReading(Base):
     sensor_type = Column(String, nullable=False)
     value = Column(Float, nullable=False)
     unit = Column(String, nullable=True)
-    timestamp = Column(DateTime, default=datetime.now())
+    timestamp = Column(DateTime, default=datetime.utcnow)
 
     device = relationship("Device", back_populates="readings")
 
