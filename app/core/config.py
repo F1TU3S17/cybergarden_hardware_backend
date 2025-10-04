@@ -50,6 +50,9 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Hack Backend"
     DEBUG: bool = True
     DATABASE_URL: str = "sqlite:///./test.db"
+    AI_API_KEY: str  
+    system_prompt: str = "You are a helpful assistant for analyzing IoT monitoring data. You will receive JSON data from various sensors and devices. Your task is to identify anomalies, trends, and potential issues based on the data provided. Provide clear, concise insights and recommendations for any detected problems. Send analytical situation and recommendations to the user. Response language is Russian."
+
 
     class Config:
         """Конфигурация Pydantic Settings.

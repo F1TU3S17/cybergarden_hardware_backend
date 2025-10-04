@@ -33,6 +33,7 @@ from app.api.v1.alerts import router as alerts_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.users import router as users_router
 from app.api.v1.commands import router as commands_router
+from app.api.v1.analize import router as analize_router
 from app.db.session import init_db
 
 
@@ -78,7 +79,7 @@ app.include_router(alerts_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(users_router, prefix="/api/v1")
 app.include_router(commands_router, prefix="/api/v1")
-
+app.include_router(analize_router, prefix="/api/v1")
 
 @app.get("/", tags=["Health Check"])
 def html():
