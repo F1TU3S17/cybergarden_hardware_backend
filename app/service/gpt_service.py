@@ -60,7 +60,6 @@ class GptService:
                 if response.status_code != 200:
                     continue
                 data = response.json()
-                print("Response from GPT model:", data)
                 return data['choices'][0]['message']['content']
         
 

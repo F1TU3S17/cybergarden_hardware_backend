@@ -6,6 +6,7 @@
     <title>IoT Monitoring Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -817,6 +818,195 @@
             border-color: var(--accent-blue);
             color: white;
         }
+
+        /* Analytics Modal Styles */
+        .analytics-content {
+            max-width: 900px;
+        }
+
+        .analytics-loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .analytics-loading .spinner {
+            margin: 0 auto 20px;
+        }
+
+        .analytics-result {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            line-height: 1.8;
+        }
+
+        /* Markdown Rendering Styles */
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3,
+        .markdown-content h4 {
+            color: var(--text-primary);
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .markdown-content h1 {
+            font-size: 2em;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .markdown-content h2 {
+            font-size: 1.5em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .markdown-content h3 {
+            font-size: 1.25em;
+            color: var(--accent-blue);
+        }
+
+        .markdown-content h4 {
+            font-size: 1.1em;
+        }
+
+        .markdown-content p {
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .markdown-content ul,
+        .markdown-content ol {
+            margin-bottom: 16px;
+            padding-left: 30px;
+        }
+
+        .markdown-content li {
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .markdown-content strong {
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .markdown-content code {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--accent-purple);
+        }
+
+        .markdown-content pre {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+        }
+
+        .markdown-content pre code {
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 20px;
+            margin: 16px 0;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .markdown-content hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 24px 0;
+        }
+
+        .markdown-content a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .markdown-content a:hover {
+            color: var(--accent-purple);
+            text-decoration: underline;
+        }
+
+        .analytics-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--accent-red);
+            border-radius: 8px;
+            padding: 20px;
+            color: var(--accent-red);
+            text-align: center;
+        }
+
+        .analytics-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .analytics-device-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .analytics-timestamp {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* AI Analytics Button */
+        .btn-ai-analytics {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-ai-analytics:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.4);
+            background: linear-gradient(135deg, #9333ea, #0ea5e9);
+        }
+
+        .btn-ai-analytics:active {
+            transform: translateY(0);
+        }
+
+        .btn-ai-analytics .icon {
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 <body>
@@ -969,6 +1159,26 @@
                 <div id="readingsListContainer">
                     <div class="loading">
                         <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Modal -->
+    <div id="analyticsModal" class="modal">
+        <div class="modal-content analytics-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    🤖 AI Аналитика устройства
+                </div>
+                <button class="modal-close" onclick="closeAnalyticsModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="analyticsContainer">
+                    <div class="analytics-loading">
+                        <div class="spinner"></div>
+                        <p style="color: var(--text-secondary); margin-top: 10px;">Анализируем данные с устройства...</p>
                     </div>
                 </div>
             </div>
@@ -1226,6 +1436,10 @@
                             Последняя активность: ${formatDate(device.last_seen)}
                         </div>
                     ` : ''}
+                    <button class="btn-ai-analytics" onclick="event.stopPropagation(); openAnalyticsModal('${device.id}')">
+                        <span class="icon">🤖</span>
+                        <span>AI Аналитика</span>
+                    </button>
                 </div>
             `).join('');
 
@@ -1562,10 +1776,92 @@
             }
         }
 
-        // Show device details (placeholder)
+        // Show device details (alerts)
         function showDeviceDetails(deviceId) {
             // Open alerts modal for this device
             openAlertsModal(deviceId);
+        }
+
+        // Analytics Modal Functions
+        async function openAnalyticsModal(deviceId) {
+            const modal = document.getElementById('analyticsModal');
+            const container = document.getElementById('analyticsContainer');
+            
+            modal.classList.add('show');
+            
+            // Show loading state
+            container.innerHTML = `
+                <div class="analytics-loading">
+                    <div class="spinner"></div>
+                    <p style="color: var(--text-secondary); margin-top: 10px;">Анализируем данные с устройства...</p>
+                </div>
+            `;
+            
+            try {
+                // Get device name
+                const device = allDevices.find(d => d.id === deviceId);
+                const deviceName = device ? device.name : 'Неизвестное устройство';
+                
+                // Fetch analytics from API
+                const response = await fetch(`${API_BASE}/analyze/gpt/${deviceId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Ошибка сервера: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Display analytics result
+                displayAnalytics(data, deviceName);
+                
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+                container.innerHTML = `
+                    <div class="analytics-error">
+                        <h3>❌ Ошибка загрузки аналитики</h3>
+                        <p>${error.message}</p>
+                        <p style="margin-top: 10px; font-size: 0.9em;">Попробуйте обновить страницу и повторить попытку</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function displayAnalytics(data, deviceName) {
+            const container = document.getElementById('analyticsContainer');
+            const timestamp = new Date().toLocaleString('ru-RU');
+            
+            // Parse markdown to HTML
+            let analysisHtml = '';
+            if (data.analysis) {
+                // Configure marked for safe rendering
+                marked.setOptions({
+                    breaks: true,
+                    gfm: true,
+                    sanitize: false
+                });
+                
+                analysisHtml = marked.parse(data.analysis);
+            }
+            
+            container.innerHTML = `
+                <div class="analytics-meta">
+                    <div class="analytics-device-name">📡 ${deviceName}</div>
+                    <div class="analytics-timestamp">🕐 ${timestamp}</div>
+                </div>
+                <div class="analytics-result markdown-content">
+                    ${analysisHtml || '<p>Нет данных для анализа</p>'}
+                </div>
+            `;
+        }
+        
+        function closeAnalyticsModal() {
+            const modal = document.getElementById('analyticsModal');
+            modal.classList.remove('show');
         }
 
         // Modal functions
@@ -1615,11 +1911,18 @@
             }
         });
 
+        document.getElementById('analyticsModal').addEventListener('click', (e) => {
+            if (e.target.id === 'analyticsModal') {
+                closeAnalyticsModal();
+            }
+        });
+
         // Close modal on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeAlertsModal();
                 closeReadingsModal();
+                closeAnalyticsModal();
             }
         });
 
