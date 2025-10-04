@@ -448,7 +448,13 @@
 
         @media (max-width: 1400px) {
             .chart-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .chart-grid {
+                grid-template-columns: 1fr !important;
             }
         }
 
@@ -877,7 +883,7 @@
         </div>
 
         <!-- Charts Grid -->
-        <div class="chart-grid">
+        <div class="chart-grid" style="grid-template-columns: repeat(3, 1fr);">
             <div class="card">
                 <div class="card-header">
                     <div>
@@ -899,6 +905,18 @@
                 </div>
                 <div class="chart-container">
                     <canvas id="humidityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">🔥 Датчик огня</div>
+                        <div class="card-subtitle">Аналоговые показания датчика</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="fireChart"></canvas>
                 </div>
             </div>
         </div>
@@ -959,7 +977,7 @@
 
     <script>
         const API_BASE = '/api/v1';
-        let temperatureChart, humidityChart;
+        let temperatureChart, humidityChart, fireChart;
         let allDevices = [];
 
         // Initialize charts
@@ -1036,6 +1054,30 @@
                             title: {
                                 display: true,
                                 text: 'Влажность (%)',
+                                color: '#a1a1aa'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Fire Sensor Chart
+            const fireCtx = document.getElementById('fireChart').getContext('2d');
+            fireChart = new Chart(fireCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: []
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        ...chartOptions.scales,
+                        y: {
+                            ...chartOptions.scales.y,
+                            title: {
+                                display: true,
+                                text: 'Значение датчика',
                                 color: '#a1a1aa'
                             }
                         }
@@ -1266,6 +1308,7 @@
 
                 const tempDatasets = [];
                 const humidityDatasets = [];
+                const fireDatasets = [];
                 const allReadingsData = [];
 
                 for (let i = 0; i < allDevices.length; i++) {
@@ -1340,6 +1383,27 @@
                                 pointHoverRadius: 5
                             });
                         }
+
+                        // Fire sensor data
+                        const fireReadings = data.readings.filter(r => r.sensor_type === 'fire');
+                        if (fireReadings.length > 0) {
+                            // Sort by timestamp
+                            fireReadings.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                            
+                            fireDatasets.push({
+                                label: device.name,
+                                data: fireReadings.map(r => ({
+                                    x: new Date(r.timestamp).getTime(),
+                                    y: r.value
+                                })),
+                                borderColor: getRandomColor(i),
+                                backgroundColor: getRandomColor(i) + '20',
+                                tension: 0.4,
+                                borderWidth: 2,
+                                pointRadius: 3,
+                                pointHoverRadius: 5
+                            });
+                        }
                     }
                 }
 
@@ -1399,6 +1463,32 @@
                 humidityChart.data.datasets = humidityDatasets;
                 humidityChart.update();
 
+                // Update fire chart with time-based scale
+                fireChart.options.scales.x = {
+                    type: 'time',
+                    time: {
+                        unit: getTimeUnit(timeframe),
+                        stepSize: getStepSize(timeframe),
+                        displayFormats: {
+                            minute: 'HH:mm',
+                            hour: 'HH:mm',
+                            day: 'dd.MM',
+                            week: 'dd.MM'
+                        },
+                        tooltipFormat: 'dd.MM.yyyy HH:mm'
+                    },
+                    grid: { color: '#27272a' },
+                    ticks: { 
+                        color: '#a1a1aa',
+                        maxRotation: 45,
+                        minRotation: 0,
+                        autoSkip: true,
+                        maxTicksLimit: getMaxTicks(timeframe)
+                    }
+                };
+                fireChart.data.datasets = fireDatasets;
+                fireChart.update();
+
             } catch (error) {
                 console.error('Error loading readings:', error);
             }
@@ -1428,13 +1518,13 @@
         function getStepSize(timeframe) {
             switch(timeframe) {
                 case '1h':
-                    return 5;  // 5 minutes
+                    return 10;  // 10 minutes
                 case '3h':
-                    return 10; // 10 minutes
-                case '6h':
                     return 15; // 15 minutes
+                case '6h':
+                    return 30; // 30 minutes
                 case '8h':
-                    return 20; // 20 minutes
+                    return 30; // 30 minutes
                 case '12h':
                     return 1;  // 1 hour
                 case '24h':
@@ -1452,13 +1542,13 @@
         function getMaxTicks(timeframe) {
             switch(timeframe) {
                 case '1h':
-                    return 12;  // Every 5 minutes = 12 ticks
+                    return 6;   // Every 10 minutes = 6 ticks
                 case '3h':
-                    return 18;  // Every 10 minutes = 18 ticks
+                    return 12;  // Every 15 minutes = 12 ticks
                 case '6h':
-                    return 24;  // Every 15 minutes = 24 ticks
+                    return 12;  // Every 30 minutes = 12 ticks
                 case '8h':
-                    return 24;  // Every 20 minutes = 24 ticks
+                    return 16;  // Every 30 minutes = 16 ticks
                 case '12h':
                     return 12;  // Every hour = 12 ticks
                 case '24h':
@@ -1969,7 +2059,7 @@
             const names = {
                 'temperature': 'Температура',
                 'humidity': 'Влажность',
-                'fire': 'Датчик пожара',
+                'fire': 'Датчик огня',
                 'alert': 'Тревога'
             };
             return names[sensorType] || sensorType;
