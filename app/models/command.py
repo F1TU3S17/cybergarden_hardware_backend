@@ -9,6 +9,7 @@ Classes:
 
 from typing import Optional
 from pydantic import BaseModel
+from sqlalchemy import Numeric
 from app.enums.action_type import ActionType
 from app.enums.command_status import CommandStatus
 from app.models.base import Base, Column, String, DateTime, ForeignKey, JSON, datetime, timezone, gen_id, relationship
@@ -17,7 +18,7 @@ from app.models.base import Base, Column, String, DateTime, ForeignKey, JSON, da
 class CreateCommand(BaseModel):
     device_id: str
     action: ActionType
-    params: Optional[dict] = None
+    value: Optional[float] = None
 
 class UpdateCommandStatus(BaseModel):
     device_id: str
@@ -63,7 +64,7 @@ class Command(Base):
     id = Column(String, primary_key=True, default=gen_id)
     device_id = Column(String, ForeignKey("devices.id"), nullable=False)
     action = Column(String, nullable=False)
-    params = Column(JSON, nullable=True)
+    value = Column(Numeric, nullable=True)
     status = Column(String, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now())
 

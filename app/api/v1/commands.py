@@ -28,7 +28,7 @@ async def create_command(
     command = Command(
         device_id=create_command.device_id,
         action=create_command.action,
-        params=create_command.params,
+        value=create_command.value,
         status=CommandStatus.PENDING
     )
     db.add(command)
