@@ -505,9 +505,16 @@ docker-compose down
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - [SQLAlchemy Documentation](https://docs.sqlalchemy.org/)
 - [Mistral AI Documentation](https://docs.mistral.ai/)
-- [Pydantic Documentation](https://docs.pydantic.dev/)
+- [Pydantic Documentation](https://d<img width="1920" height="1080" alt="2025-10-05_02-46-09" src="https://github.com/user-attachments/assets/27030b57-c2b8-4718-b40b-36de196e3b2d" />
+ocs.pydantic.dev/)
 
----
+---<img width="1920" height="1080" alt="2025-10-05_02-45-18" src="https://github.com/user-attachments/assets/c5745f96-027c-46f5-bbe5-99723edff2b5" />
+<img width="1920" height="1080" alt="2025-10-05_02-45-36" src="https://github.com/user-attachments/assets/f90899ed-da61-41ca-b8dd-0a0e60ceb619" />
+<img width="1920" height="1080" alt="2025-10-05_02-45-45" src="https://github.com/user-attachments/assets/6d231928-472e-49a1-9bfa-e7fb9e718062" />
+<img width="1920" height="1080" alt="2025-10-05_02-45-57" src="https://github.com/user-attachments/assets/f9a3dc12-078b-41f4-9677-48e90a97804e" />
+<img width="1920" height="1080" alt="2025-10-05_02-45-57" src="https://github.com/user-attachments/assets/9cfc4c85-ebc8-4d83-a0f1-0b9aae9a241c" />
+
+
 
 Made with ❤️ using FastAPI, Python and AI
 
