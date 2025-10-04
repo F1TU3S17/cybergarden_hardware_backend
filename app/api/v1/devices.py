@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, timedelta
 
+from app.api.enums.device_status import DeviceStatus
 from app.api.enums.sensor_type import SensorType
 from app.api.enums.timeframe import TimeFrame
 from app.db.session import get_db
@@ -40,7 +41,7 @@ async def create_device(
 
 @router.get("/")
 async def get_all_devices(
-    status: Optional[str] = Query(None, description="Фильтр по статусу"),
+    status: Optional[DeviceStatus] = Query(None, description="Фильтр по статусу"),
     limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
@@ -103,7 +104,7 @@ async def get_device(device_id: str, db: Session = Depends(get_db)):
 @router.patch("/{device_id}")
 async def update_device(
     device_id: str,
-    status: Optional[str] = None,
+    status: Optional[DeviceStatus] = None,
     location: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
@@ -170,6 +171,7 @@ async def add_reading(
     """
     # Проверить существование устройства
     device = db.query(Device).filter(Device.id == create_reading.device_id).first()
+    print(create_reading)
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     
@@ -194,6 +196,7 @@ async def add_reading(
 async def get_device_readings(
     device_id: str,
     limit: int = Query(10, ge=1, le=1000),
+    sensor_type: Optional[SensorType] = Query(None, description="Фильтр по типу датчика"),
     timeframe: Optional[TimeFrame] = Query(None, description="Временной интервал"),
     db: Session = Depends(get_db)
 ):
@@ -208,6 +211,17 @@ async def get_device_readings(
         raise HTTPException(status_code=404, detail="Device not found")
 
     readings = device.readings[-limit:]  # последние N записей
+    
+    if sensor_type:
+        match sensor_type:
+            case SensorType.TEMPERATURE:
+                readings = [r for r in readings if r.sensor_type == SensorType.TEMPERATURE]
+            case SensorType.HUMIDITY:
+                readings = [r for r in readings if r.sensor_type == SensorType.HUMIDITY]
+            case SensorType.ALERT:
+                readings = [r for r in readings if r.sensor_type == SensorType.ALERT]
+            case _:
+                raise HTTPException(status_code=400, detail="Invalid sensor type")
 
     if timeframe:
         match timeframe:
@@ -229,7 +243,7 @@ async def get_device_readings(
                 readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(days=30)]
             case _:
                 raise HTTPException(status_code=400, detail="Invalid timeframe")
-        
+
     return {
         "device_id": device_id,
         "device_name": device.name,

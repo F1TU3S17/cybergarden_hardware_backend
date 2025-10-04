@@ -26,6 +26,7 @@ API документация доступна по адресу:
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.responses import FileResponse, HTMLResponse
 
 from app.api.v1.devices import router as devices_router
 from app.api.v1.alerts import router as alerts_router
@@ -80,20 +81,5 @@ app.include_router(commands_router, prefix="/api/v1")
 
 
 @app.get("/", tags=["Health Check"])
-def health_check():
-    """
-    Проверка работоспособности API.
-    
-    Простая конечная точка для проверки доступности сервиса.
-    Используется для мониторинга и load balancer health checks.
-    
-    Returns:
-        dict: Статус работы API
-            - status (str): "ok" если сервис работает нормально
-            
-    Example:
-        >>> GET /
-        {"status": "ok"}
-    """
-    return {"status": "ok"}
-
+def html():
+    return FileResponse('index.html')
