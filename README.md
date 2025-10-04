@@ -509,8 +509,7 @@ docker-compose down
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - [SQLAlchemy Documentation](https://docs.sqlalchemy.org/)
 - [Mistral AI Documentation](https://docs.mistral.ai/)
-- [Pydantic Documentation](https://d<img width="1920" height="1080" alt="2025-10-05_02-46-09" src="https://github.com/user-attachments/assets/27030b57-c2b8-4718-b40b-36de196e3b2d" />
-ocs.pydantic.dev/)
+
 
 
 
