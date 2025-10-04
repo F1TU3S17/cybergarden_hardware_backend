@@ -50,7 +50,7 @@ async def get_device_commands_list(device_id: str, command_status: CommandStatus
 
     return commands
 
-@router.put('/{device_id}/status/{command_id}', status_code=200)
+@router.put('/status', status_code=200)
 async def update_command_status(update_command_status: UpdateCommandStatus, db: Session = Depends(get_db)):
     """
     Обновить статус комманды девайса 
