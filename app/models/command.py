@@ -7,8 +7,23 @@ Classes:
     Command: SQLAlchemy модель команды в базе данных
 """
 
+from typing import Optional
+from pydantic import BaseModel
+from app.enums.action_type import ActionType
+from app.enums.command_status import CommandStatus
 from app.models.base import Base, Column, String, DateTime, ForeignKey, JSON, datetime, timezone, gen_id, relationship
 
+
+class CreateCommand(BaseModel):
+    device_id: str
+    action: ActionType
+    params: Optional[dict] = None
+
+class UpdateCommandStatus(BaseModel):
+    device_id: str
+    command_id: str
+    new_status: CommandStatus
+    
 
 class Command(Base):
     """Модель команды для IoT устройства.

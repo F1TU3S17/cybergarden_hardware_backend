@@ -11,7 +11,7 @@
 
 from typing import Optional
 from pydantic import BaseModel
-from app.api.enums.user_roles import UserRole
+from app.enums.user_roles import UserRole
 from app.models.base import Base, Column, String, DateTime, datetime, timezone, gen_id, gen_uuid, gen_uuid
 
 

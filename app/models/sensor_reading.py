@@ -9,7 +9,7 @@ Classes:
 """
 
 from pydantic import BaseModel
-from app.api.enums.sensor_type import SensorType
+from app.enums.sensor_type import SensorType
 from app.models.base import Base, Column, String, Float, DateTime, ForeignKey, datetime, timezone, gen_id, gen_uuid, relationship
 
 

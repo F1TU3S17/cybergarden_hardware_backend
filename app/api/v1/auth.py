@@ -5,7 +5,7 @@ from datetime import datetime
 
 from app.db.session import get_db
 
-from app.api.enums.alert_status import AlertStatus
+from app.enums.alert_status import AlertStatus
 from app.models.user import BaseUser, CreateUser, User
 from app.service.password_service import PasswordService
 

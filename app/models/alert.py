@@ -9,7 +9,7 @@ Classes:
 """
 
 from pydantic import BaseModel
-from app.api.enums.alert_type import AlertType
+from app.enums.alert_type import AlertType
 from app.models.base import Base, Column, String, Boolean, DateTime, ForeignKey, Text, datetime, timezone, gen_id, gen_uuid, relationship
 
 

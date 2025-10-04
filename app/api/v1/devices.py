@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, timedelta
 
-from app.api.enums.device_status import DeviceStatus
-from app.api.enums.sensor_type import SensorType
-from app.api.enums.timeframe import TimeFrame
+from app.enums.device_status import DeviceStatus
+from app.enums.sensor_type import SensorType
+from app.enums.timeframe import TimeFrame
 from app.db.session import get_db
 from app.models.device import Device
 from app.models.sensor_reading import ReadingBase, SensorReading

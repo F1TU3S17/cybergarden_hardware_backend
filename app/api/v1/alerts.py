@@ -5,7 +5,7 @@ from datetime import datetime
 
 from app.db.session import get_db
 
-from app.api.enums.alert_status import AlertStatus
+from app.enums.alert_status import AlertStatus
 from app.models.alert import Alert, BaseAlert
 from app.models.device import Device
 

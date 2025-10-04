@@ -32,7 +32,7 @@ from app.api.v1.devices import router as devices_router
 from app.api.v1.alerts import router as alerts_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.users import router as users_router
-from app.api.v1.commads import router as commands_router
+from app.api.v1.commands import router as commands_router
 from app.db.session import init_db
 
 
