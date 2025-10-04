@@ -13,7 +13,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/login")
-def login(
+async def login(
     login_user: BaseUser,
     db: Session = Depends(get_db)
 ):

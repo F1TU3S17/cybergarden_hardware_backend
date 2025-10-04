@@ -12,7 +12,7 @@ from app.models.device import Device
 router = APIRouter(prefix="/alerts", tags=["alerts"])
 
 @router.post("/", status_code=201)
-def create_alert(
+async def create_alert(
     create_alert: BaseAlert,
     db: Session = Depends(get_db)
 ):
@@ -38,7 +38,7 @@ def create_alert(
 
 
 @router.get("/{device_id}/alerts")
-def get_device_alerts(
+async def get_device_alerts(
     device_id: str,
     status: Optional[str] = Query(None, description="Фильтр по статусу"),
     limit: int = Query(10, ge=1, le=100),
@@ -82,7 +82,7 @@ def get_device_alerts(
     
 
 @router.put("/{alert_id}/status")
-def update_alert_status(
+async def update_alert_status(
     alert_id: str,
     status: AlertStatus,
     db: Session = Depends(get_db)

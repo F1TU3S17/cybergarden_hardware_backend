@@ -10,7 +10,7 @@ Classes:
 
 from pydantic import BaseModel
 from app.api.enums.alert_type import AlertType
-from app.models.base import Base, Column, String, Boolean, DateTime, ForeignKey, Text, datetime, gen_id, relationship
+from app.models.base import Base, Column, String, Boolean, DateTime, ForeignKey, Text, datetime, gen_id, gen_uuid, relationship
 
 
 class BaseAlert(BaseModel):
@@ -64,7 +64,7 @@ class Alert(Base):
     """
     __tablename__ = "alerts"
 
-    id = Column(String, primary_key=True, default=gen_id)
+    id = Column(String, primary_key=True, default=gen_uuid)
     device_id = Column(String, ForeignKey("devices.id"), nullable=False)
     alert_type = Column(String, nullable=True)  # Тип оповещения
     code = Column(String, nullable=True)

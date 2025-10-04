@@ -12,7 +12,7 @@
 from typing import Optional
 from pydantic import BaseModel
 from app.api.enums.user_roles import UserRole
-from app.models.base import Base, Column, String, DateTime, datetime, gen_id
+from app.models.base import Base, Column, String, DateTime, datetime, gen_id, gen_uuid, gen_uuid
 
 
 class BaseUser(BaseModel):
@@ -78,7 +78,7 @@ class User(Base):
     """
     __tablename__ = "users"
 
-    id = Column(String, primary_key=True, default=gen_id)
+    id = Column(String, primary_key=True, default=gen_uuid)
     username = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
     role = Column(String, nullable=True)

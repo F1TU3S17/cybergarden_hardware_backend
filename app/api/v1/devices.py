@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import case
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from app.api.enums.sensor_type import SensorType
+from app.api.enums.timeframe import TimeFrame
 from app.db.session import get_db
 from app.models.device import Device
 from app.models.sensor_reading import ReadingBase, SensorReading
@@ -13,7 +15,7 @@ router = APIRouter(prefix="/devices", tags=["devices"])
 
 
 @router.post("/", status_code=201)
-def create_device(
+async def create_device(
     name: str,
     location: Optional[str] = None,
     db: Session = Depends(get_db)
@@ -37,7 +39,7 @@ def create_device(
 
 
 @router.get("/")
-def get_all_devices(
+async def get_all_devices(
     status: Optional[str] = Query(None, description="Фильтр по статусу"),
     limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db)
@@ -73,7 +75,7 @@ def get_all_devices(
 
 
 @router.get("/{device_id}")
-def get_device(device_id: str, db: Session = Depends(get_db)):
+async def get_device(device_id: str, db: Session = Depends(get_db)):
     """
     Получить устройство по ID со связанными данными.
     
@@ -99,7 +101,7 @@ def get_device(device_id: str, db: Session = Depends(get_db)):
 
 
 @router.patch("/{device_id}")
-def update_device(
+async def update_device(
     device_id: str,
     status: Optional[str] = None,
     location: Optional[str] = None,
@@ -134,7 +136,7 @@ def update_device(
 # ============= DELETE (удаление) =============
 
 @router.delete("/{device_id}")
-def delete_device(device_id: str, db: Session = Depends(get_db)):
+async def delete_device(device_id: str, db: Session = Depends(get_db)):
     """
     Удалить устройство (и все связанные записи благодаря cascade).
     
@@ -156,7 +158,7 @@ def delete_device(device_id: str, db: Session = Depends(get_db)):
 # ============= СВЯЗАННЫЕ ДАННЫЕ (relationships) =============
 
 @router.post("/{device_id}/readings")
-def add_reading(
+async def add_reading(
     create_reading: ReadingBase,
     db: Session = Depends(get_db)
 ):
@@ -189,9 +191,10 @@ def add_reading(
 
 
 @router.get("/{device_id}/readings")
-def get_device_readings(
+async def get_device_readings(
     device_id: str,
-    limit: int = Query(10, ge=1, le=100),
+    limit: int = Query(10, ge=1, le=1000),
+    timeframe: Optional[TimeFrame] = Query(None, description="Временной интервал"),
     db: Session = Depends(get_db)
 ):
     """
@@ -203,9 +206,28 @@ def get_device_readings(
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    
+
     readings = device.readings[-limit:]  # последние N записей
-    
+
+    if timeframe:
+        match timeframe:
+            case TimeFrame.ONE_HOUR:
+                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(hours=1)]
+            case TimeFrame.THREE_HOURS:
+                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(hours=3)]
+            case TimeFrame.SIX_HOURS:
+                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(hours=6)]
+            case TimeFrame.TWELVE_HOURS:
+                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(hours=12)]
+            case TimeFrame.EIGHT_HOURS:
+                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(days=1)]
+            case TimeFrame.SEVEN_DAYS:
+                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(days=7)]
+            case TimeFrame.THIRTY_DAYS:
+                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(days=30)]
+            case _:
+                raise HTTPException(status_code=400, detail="Invalid timeframe")
+        
     return {
         "device_id": device_id,
         "device_name": device.name,
@@ -221,3 +243,5 @@ def get_device_readings(
             for r in readings
         ]
     }
+
+
