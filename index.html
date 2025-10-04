@@ -1007,6 +1007,287 @@
         .btn-ai-analytics .icon {
             font-size: 1.2rem;
         }
+
+        /* Device Control Modal Styles */
+        .tab-content {
+            min-height: 400px;
+        }
+
+        .command-form {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        .form-hint {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-blue);
+            background: var(--bg-secondary);
+        }
+
+        .form-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .form-message.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .form-message.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .command-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .command-item:hover {
+            border-color: var(--accent-blue);
+            transform: translateX(5px);
+        }
+
+        .command-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .command-action {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .command-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .command-status.pending {
+            background: rgba(249, 115, 22, 0.2);
+            color: var(--accent-orange);
+        }
+
+        .command-status.finished {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+        }
+
+        .command-status.rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+
+        .command-details {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .command-value {
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .command-timestamp {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .log-item {
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--accent-blue);
+            border-radius: 5px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .log-level {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .log-level.info {
+            color: var(--accent-blue);
+        }
+
+        .log-level.warning {
+            color: var(--accent-orange);
+        }
+
+        .log-level.error {
+            color: var(--accent-red);
+        }
+
+        .log-message {
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .log-timestamp {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .filter-tab.small {
+            padding: 8px 15px;
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .command-actions {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-reject-command {
+            background: linear-gradient(135deg, var(--accent-red), #b91c1c);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-reject-command:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-reject-command:active {
+            transform: translateY(0);
+        }
+
+        .btn-reject-command .icon {
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -1179,6 +1460,89 @@
                     <div class="analytics-loading">
                         <div class="spinner"></div>
                         <p style="color: var(--text-secondary); margin-top: 10px;">Анализируем данные с устройства...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Device Control Modal -->
+    <div id="deviceControlModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title" id="deviceControlTitle">Управление устройством</h2>
+                    <p class="card-subtitle" id="deviceControlSubtitle">ID: <span id="deviceControlId"></span></p>
+                </div>
+                <button class="modal-close" onclick="closeDeviceControlModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Tabs -->
+                <div class="filter-tabs" style="margin-bottom: 20px;">
+                    <button class="filter-tab active" onclick="switchDeviceTab('logs')">� Показания</button>
+                    <button class="filter-tab" onclick="switchDeviceTab('commands')">⚡ Команды</button>
+                    <button class="filter-tab" onclick="switchDeviceTab('add-command')">➕ Добавить команду</button>
+                </div>
+
+                <!-- Logs Tab -->
+                <div id="logsTab" class="tab-content">
+                    <div id="logsLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Загрузка показаний...</p>
+                    </div>
+                    <div id="logsList" class="readings-list"></div>
+                </div>
+
+                <!-- Commands Tab -->
+                <div id="commandsTab" class="tab-content" style="display: none;">
+                    <div class="filter-tabs" style="margin-bottom: 15px; background: var(--bg-secondary); padding: 10px; border-radius: 8px;">
+                        <button class="filter-tab small" onclick="filterCommands('pending')">🕐 Ожидание</button>
+                        <button class="filter-tab small" onclick="filterCommands('finished')">✅ Выполнено</button>
+                        <button class="filter-tab small" onclick="filterCommands('rejected')">❌ Отклонено</button>
+                        <button class="filter-tab small active" onclick="filterCommands('ALL')">📊 Все</button>
+                    </div>
+                    <div id="commandsLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Загрузка команд...</p>
+                    </div>
+                    <div id="commandsList" class="readings-list"></div>
+                </div>
+
+                <!-- Add Command Tab -->
+                <div id="addCommandTab" class="tab-content" style="display: none;">
+                    <div class="command-form">
+                        <h3 style="margin-bottom: 20px; color: var(--text-primary);">Создать новую команду</h3>
+                        
+                        <div class="form-group">
+                            <label for="commandAction">Тип команды</label>
+                            <select id="commandAction" class="form-control" onchange="updateCommandValueField()">
+                                <option value="">Выберите команду...</option>
+                                <option value="toggle_alert">🔔 Переключить тревогу</option>
+                                <option value="toggle_servo">🔧 Изменить состояние сервопривода</option>
+                                <option value="set_temerature_limit">🌡️ Установить лимит температуры</option>
+                                <option value="set_fire_limit">🔥 Установить лимит огня</option>
+                                <option value="set_humidity_limit">💧 Установить лимит влажности</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="commandValueGroup" style="display: none;">
+                            <label for="commandValue">Значение</label>
+                            <input type="text" id="commandValue" class="form-control" placeholder="Введите значение">
+                            <small id="commandValueHint" class="form-hint"></small>
+                        </div>
+
+                        <div class="form-actions">
+                            <button class="btn-primary" onclick="submitCommand()">
+                                <span class="icon">⚡</span>
+                                Отправить команду
+                            </button>
+                            <button class="btn-secondary" onclick="resetCommandForm()">
+                                <span class="icon">↺</span>
+                                Сбросить
+                            </button>
+                        </div>
+
+                        <div id="commandFormMessage" class="form-message"></div>
                     </div>
                 </div>
             </div>
@@ -1404,7 +1768,7 @@
             }
 
             container.innerHTML = devices.map(device => `
-                <div class="device-card" onclick="showDeviceDetails('${device.id}')">
+                <div class="device-card" onclick="openDeviceControlModal('${device.id}', '${device.name}')">
                     <div class="device-header">
                         <div class="device-name">${device.name}</div>
                         <div class="device-status status-${device.status}">
@@ -1923,6 +2287,7 @@
                 closeAlertsModal();
                 closeReadingsModal();
                 closeAnalyticsModal();
+                closeDeviceControlModal();
             }
         });
 
@@ -2367,6 +2732,362 @@
             };
             return names[sensorType] || sensorType;
         }
+
+        // Device Control Modal Functions
+        let currentDeviceId = null;
+        let currentCommandsFilter = 'ALL';
+        let allCommands = [];
+
+        async function openDeviceControlModal(deviceId, deviceName) {
+            currentDeviceId = deviceId;
+            document.getElementById('deviceControlTitle').textContent = deviceName;
+            document.getElementById('deviceControlId').textContent = deviceId;
+            document.getElementById('deviceControlModal').classList.add('show');
+            
+            // Switch to logs tab by default
+            switchDeviceTab('logs');
+        }
+
+        function closeDeviceControlModal() {
+            document.getElementById('deviceControlModal').classList.remove('show');
+            currentDeviceId = null;
+            currentCommandsFilter = 'ALL';
+            resetCommandForm();
+        }
+
+        function switchDeviceTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+
+            // Remove active class from all tab buttons
+            document.querySelectorAll('#deviceControlModal .filter-tab').forEach(btn => {
+                if (!btn.parentElement.classList.contains('form-actions')) {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Show selected tab
+            if (tabName === 'logs') {
+                document.getElementById('logsTab').style.display = 'block';
+                document.querySelectorAll('#deviceControlModal .filter-tab')[0].classList.add('active');
+                loadDeviceLogs(); // Load device readings
+            } else if (tabName === 'commands') {
+                document.getElementById('commandsTab').style.display = 'block';
+                document.querySelectorAll('#deviceControlModal .filter-tab')[1].classList.add('active');
+                loadDeviceCommands();
+            } else if (tabName === 'add-command') {
+                document.getElementById('addCommandTab').style.display = 'block';
+                document.querySelectorAll('#deviceControlModal .filter-tab')[2].classList.add('active');
+            }
+        }
+
+        // Load device logs (readings)
+        async function loadDeviceLogs() {
+            const logsLoading = document.getElementById('logsLoading');
+            const logsList = document.getElementById('logsList');
+            
+            logsLoading.style.display = 'block';
+            logsList.innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_BASE}/devices/${currentDeviceId}/readings?limit=1000`);
+                if (!response.ok) {
+                    throw new Error('Failed to load readings');
+                }
+                
+                const data = await response.json();
+                const readings = data.readings || [];
+                logsLoading.style.display = 'none';
+
+                if (readings.length === 0) {
+                    logsList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><p>Нет данных для этого устройства</p></div>';
+                    return;
+                }
+
+                logsList.innerHTML = readings.map(reading => `
+                    <div class="log-item">
+                        <div class="log-header">
+                            <span class="log-level info">${getSensorIcon(reading.sensor_type)} ${getSensorName(reading.sensor_type)}</span>
+                            <span class="log-timestamp">${formatDate(reading.timestamp)}</span>
+                        </div>
+                        <div class="log-message">
+                            <strong>${reading.value} ${reading.unit || ''}</strong>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                logsLoading.style.display = 'none';
+                logsList.innerHTML = '<div class="error-message">❌ Ошибка загрузки данных</div>';
+                console.error('Error loading readings:', error);
+            }
+        }
+
+        // Load device commands
+        async function loadDeviceCommands() {
+            const commandsLoading = document.getElementById('commandsLoading');
+            const commandsList = document.getElementById('commandsList');
+            
+            commandsLoading.style.display = 'block';
+            commandsList.innerHTML = '';
+
+            try {
+                // Load all commands for the device
+                const statuses = ['pending', 'finished', 'rejected'];
+                const commandPromises = statuses.map(status => 
+                    fetch(`${API_BASE}/device/commands/${currentDeviceId}/${status}`)
+                        .then(res => res.ok ? res.json() : [])
+                        .catch(() => [])
+                );
+                
+                const commandArrays = await Promise.all(commandPromises);
+                allCommands = commandArrays.flat();
+                
+                commandsLoading.style.display = 'none';
+                renderCommands(allCommands);
+            } catch (error) {
+                commandsLoading.style.display = 'none';
+                commandsList.innerHTML = '<div class="error-message">❌ Ошибка загрузки команд</div>';
+                console.error('Error loading commands:', error);
+            }
+        }
+
+        function renderCommands(commands) {
+            const commandsList = document.getElementById('commandsList');
+            
+            let filteredCommands = commands;
+            if (currentCommandsFilter !== 'ALL') {
+                filteredCommands = commands.filter(cmd => cmd.status === currentCommandsFilter);
+            }
+
+            if (filteredCommands.length === 0) {
+                commandsList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚡</div><p>Нет команд с выбранным фильтром</p></div>';
+                return;
+            }
+
+            commandsList.innerHTML = filteredCommands.map(cmd => `
+                <div class="command-item" id="command-${cmd.id}">
+                    <div class="command-header">
+                        <span class="command-action">${getCommandActionName(cmd.action)}</span>
+                        <span class="command-status ${cmd.status.toLowerCase()}">${getCommandStatusName(cmd.status)}</span>
+                    </div>
+                    <div class="command-details">
+                        ${cmd.value ? `<span>Значение: <span class="command-value">${cmd.value}</span></span>` : ''}
+                    </div>
+                    <div class="command-timestamp">Создана: ${formatDate(cmd.created_at)}</div>
+                    ${cmd.executed_at ? `<div class="command-timestamp">Выполнена: ${formatDate(cmd.executed_at)}</div>` : ''}
+                    ${cmd.status === 'pending' ? `
+                        <div class="command-actions">
+                            <button class="btn-reject-command" onclick="rejectCommand('${cmd.id}', event)">
+                                <span class="icon">❌</span>
+                                Отклонить
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function filterCommands(filter) {
+            currentCommandsFilter = filter;
+            
+            // Update active filter button
+            document.querySelectorAll('#commandsTab .filter-tab.small').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderCommands(allCommands);
+        }
+
+        function getCommandActionName(action) {
+            const names = {
+                'toggle_alert': '🔔 Переключить тревогу',
+                'toggle_servo': '🔧 Изменить состояние сервопривода',
+                'set_temerature_limit': '🌡️ Установить лимит температуры',
+                'set_fire_limit': '🔥 Установить лимит огня',
+                'set_humidity_limit': '💧 Установить лимит влажности'
+            };
+            return names[action] || action;
+        }
+
+        function getCommandStatusName(status) {
+            const names = {
+                'pending': 'Ожидание',
+                'finished': 'Выполнено',
+                'rejected': 'Отклонено'
+            };
+            return names[status] || status;
+        }
+
+        // Reject command
+        async function rejectCommand(commandId, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+
+            if (!confirm('Вы уверены, что хотите отклонить эту команду?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/device/commands/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        device_id: currentDeviceId,
+                        command_id: commandId,
+                        new_status: 'rejected'
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || 'Failed to reject command');
+                }
+
+                // Update command in the list
+                const commandElement = document.getElementById(`command-${commandId}`);
+                if (commandElement) {
+                    // Add animation
+                    commandElement.style.opacity = '0.5';
+                    commandElement.style.transition = 'opacity 0.3s ease';
+                }
+
+                // Reload commands after a short delay
+                setTimeout(() => {
+                    loadDeviceCommands();
+                }, 500);
+            } catch (error) {
+                alert('❌ Ошибка при отклонении команды: ' + error.message);
+                console.error('Error rejecting command:', error);
+            }
+        }
+
+        // Command form functions
+        function updateCommandValueField() {
+            const action = document.getElementById('commandAction').value;
+            const valueGroup = document.getElementById('commandValueGroup');
+            const valueInput = document.getElementById('commandValue');
+            const valueHint = document.getElementById('commandValueHint');
+
+            if (!action) {
+                valueGroup.style.display = 'none';
+                return;
+            }
+
+            // Hide value field for toggle commands
+            if (action === 'toggle_alert' || action === 'toggle_servo') {
+                valueGroup.style.display = 'none';
+                return;
+            }
+
+            valueGroup.style.display = 'block';
+
+            // Set hints based on command type
+            const hints = {
+                'set_temerature_limit': 'Введите температуру в градусах Цельсия (например: 25)',
+                'set_fire_limit': 'Введите пороговое значение (например: 500)',
+                'set_humidity_limit': 'Введите влажность в процентах (например: 60)'
+            };
+
+            valueHint.textContent = hints[action] || 'Введите значение для команды';
+
+            // Set input type as number for limit commands
+            valueInput.type = 'number';
+        }
+
+        async function submitCommand() {
+            const action = document.getElementById('commandAction').value;
+            const valueStr = document.getElementById('commandValue').value;
+            const messageEl = document.getElementById('commandFormMessage');
+
+            messageEl.className = 'form-message';
+            messageEl.style.display = 'none';
+
+            if (!action) {
+                messageEl.className = 'form-message error';
+                messageEl.textContent = '❌ Пожалуйста, выберите тип команды';
+                messageEl.style.display = 'block';
+                return;
+            }
+
+            // Check if value is required (not for toggle commands)
+            const isToggleCommand = action === 'toggle_alert' || action === 'toggle_servo';
+            if (!isToggleCommand && !valueStr) {
+                messageEl.className = 'form-message error';
+                messageEl.textContent = '❌ Пожалуйста, введите значение для команды';
+                messageEl.style.display = 'block';
+                return;
+            }
+
+            try {
+                // Convert value to float for limit commands, null for toggle commands
+                let value = null;
+                if (!isToggleCommand && valueStr) {
+                    value = parseFloat(valueStr);
+                    if (isNaN(value)) {
+                        messageEl.className = 'form-message error';
+                        messageEl.textContent = '❌ Значение должно быть числом';
+                        messageEl.style.display = 'block';
+                        return;
+                    }
+                }
+
+                const response = await fetch(`${API_BASE}/device/commands/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        device_id: currentDeviceId,
+                        action: action,
+                        value: value
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || 'Failed to create command');
+                }
+
+                const result = await response.json();
+                
+                messageEl.className = 'form-message success';
+                messageEl.textContent = '✅ Команда успешно создана!';
+                messageEl.style.display = 'block';
+
+                // Reset form after 2 seconds and switch to commands tab
+                setTimeout(() => {
+                    resetCommandForm();
+                    switchDeviceTab('commands');
+                }, 2000);
+            } catch (error) {
+                messageEl.className = 'form-message error';
+                messageEl.textContent = '❌ Ошибка при создании команды: ' + error.message;
+                messageEl.style.display = 'block';
+                console.error('Error creating command:', error);
+            }
+        }
+
+        function resetCommandForm() {
+            document.getElementById('commandAction').value = '';
+            document.getElementById('commandValue').value = '';
+            document.getElementById('commandValueGroup').style.display = 'none';
+            const messageEl = document.getElementById('commandFormMessage');
+            messageEl.className = 'form-message';
+            messageEl.style.display = 'none';
+        }
+
+        // Close device control modal on background click
+        document.getElementById('deviceControlModal').addEventListener('click', (e) => {
+            if (e.target.id === 'deviceControlModal') {
+                closeDeviceControlModal();
+            }
+        });
 
         // Load all data
         async function loadData() {
