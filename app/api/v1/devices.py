@@ -220,6 +220,8 @@ async def get_device_readings(
                 readings = [r for r in readings if r.sensor_type == SensorType.HUMIDITY]
             case SensorType.ALERT:
                 readings = [r for r in readings if r.sensor_type == SensorType.ALERT]
+            case SensorType.FIRE:
+                readings = [r for r in readings if r.sensor_type == SensorType.FIRE]
             case _:
                 raise HTTPException(status_code=400, detail="Invalid sensor type")
 

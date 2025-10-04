@@ -38,15 +38,15 @@ async def create_command(
     return command
 
 @router.get('/{device_id}/{command_status}', status_code=200)
-async def get_device_commands_list(device_id: str, command_status: CommandStatus = CommandStatus.PENDING, db: Session = Depends(get_db)):
+async def get_device_commands_list(device_id: str, command_status: CommandStatus = CommandStatus.PENDING,  db: Session = Depends(get_db)):
     """
     Получить список команд, которые отсносятся к устройству
     """
     device = db.query(Device).filter(Device.id == device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
-    
-    commands = db.query(Command).filter(Device.id == device_id and Device.status == command_status).all()
+
+    commands = db.query(Command).filter((Command.device_id == device_id) & (Command.status == command_status)).all()
 
     return commands
 
