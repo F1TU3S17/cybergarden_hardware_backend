@@ -12,7 +12,7 @@
 from typing import Optional
 from pydantic import BaseModel
 from app.api.enums.user_roles import UserRole
-from app.models.base import Base, Column, String, DateTime, datetime, gen_id, gen_uuid, gen_uuid
+from app.models.base import Base, Column, String, DateTime, datetime, timezone, gen_id, gen_uuid, gen_uuid
 
 
 class BaseUser(BaseModel):
@@ -82,7 +82,7 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
     role = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     def verify_password(self, password: str) -> bool:
         """Проверка соответствия пароля хешу.

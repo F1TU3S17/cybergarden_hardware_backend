@@ -10,7 +10,7 @@ Classes:
 
 from pydantic import BaseModel
 from app.api.enums.alert_type import AlertType
-from app.models.base import Base, Column, String, Boolean, DateTime, ForeignKey, Text, datetime, gen_id, gen_uuid, relationship
+from app.models.base import Base, Column, String, Boolean, DateTime, ForeignKey, Text, datetime, timezone, gen_id, gen_uuid, relationship
 
 
 class BaseAlert(BaseModel):
@@ -72,7 +72,7 @@ class Alert(Base):
     severity = Column(String, nullable=True)  # Уровень важности (low, medium, high, critical)
     status = Column(String, nullable=True)  # Статус оповещения (new, in_progress, resolved, etc.)
     acknowledged = Column(Boolean, default=False)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     device = relationship("Device", back_populates="alerts")
 

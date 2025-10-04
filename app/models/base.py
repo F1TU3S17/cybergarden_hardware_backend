@@ -19,7 +19,7 @@
 
 import random
 import string
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import Column, String, Integer, Float, Boolean, DateTime, ForeignKey, JSON, Text
 from sqlalchemy.dialects.sqlite import BLOB

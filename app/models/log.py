@@ -7,7 +7,7 @@ Classes:
     Log: SQLAlchemy модель лога с криптографической цепочкой
 """
 
-from app.models.base import Base, Column, String, Integer, DateTime, ForeignKey, JSON, datetime, gen_id, relationship
+from app.models.base import Base, Column, String, Integer, DateTime, ForeignKey, JSON, datetime, timezone, gen_id, relationship
 
 
 class Log(Base):
@@ -57,7 +57,7 @@ class Log(Base):
     id = Column(String, primary_key=True, default=gen_id)
     device_id = Column(String, ForeignKey("devices.id"), nullable=False)
     seq = Column(Integer, nullable=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     type = Column(String, nullable=True)
     sensors = Column(JSON, nullable=True)
     actions = Column(JSON, nullable=True)

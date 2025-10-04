@@ -10,7 +10,7 @@ Classes:
 
 from pydantic import BaseModel
 from app.api.enums.sensor_type import SensorType
-from app.models.base import Base, Column, String, Float, DateTime, ForeignKey, datetime, gen_id, gen_uuid, relationship
+from app.models.base import Base, Column, String, Float, DateTime, ForeignKey, datetime, timezone, gen_id, gen_uuid, relationship
 
 
 class ReadingBase(BaseModel):
@@ -76,7 +76,7 @@ class SensorReading(Base):
     sensor_type = Column(String, nullable=False)
     value = Column(Float, nullable=False)
     unit = Column(String, nullable=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     device = relationship("Device", back_populates="readings")
 

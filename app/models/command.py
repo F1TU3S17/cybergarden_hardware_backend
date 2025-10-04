@@ -7,7 +7,7 @@ Classes:
     Command: SQLAlchemy модель команды в базе данных
 """
 
-from app.models.base import Base, Column, String, DateTime, ForeignKey, JSON, datetime, gen_id, relationship
+from app.models.base import Base, Column, String, DateTime, ForeignKey, JSON, datetime, timezone, gen_id, relationship
 
 
 class Command(Base):
@@ -50,7 +50,7 @@ class Command(Base):
     action = Column(String, nullable=False)
     params = Column(JSON, nullable=True)
     status = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     device = relationship("Device", back_populates="commands")
 
