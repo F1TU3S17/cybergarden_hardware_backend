@@ -220,6 +220,8 @@ async def get_device_readings(
             case TimeFrame.TWELVE_HOURS:
                 readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(hours=12)]
             case TimeFrame.EIGHT_HOURS:
+                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(hours=8)]
+            case TimeFrame.ONE_DAY:
                 readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(days=1)]
             case TimeFrame.SEVEN_DAYS:
                 readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(days=7)]
