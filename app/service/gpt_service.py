@@ -33,7 +33,9 @@ class GptService:
         ]
     async def analyze_monitoring_data(self, data):
          for model in self.models:
-            async with httpx.AsyncClient() as client:
+            # Set a longer timeout for AI API calls (60 seconds)
+            timeout = httpx.Timeout(60.0, connect=10.0)
+            async with httpx.AsyncClient(timeout=timeout) as client:
 
                 print
                 response = await client.post(
