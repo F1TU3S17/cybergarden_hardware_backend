@@ -1637,14 +1637,17 @@
                             <label for="commandValue">Значение</label>
                             <input type="text" id="commandValue" class="form-control" placeholder="Введите значение">
                             <div id="servoSliderContainer" style="display: none; margin-top: 10px;">
-                                <input type="range" id="servoSlider" min="0" max="5" step="1" value="0" style="width: 100%; cursor: pointer;" oninput="updateServoValue(this.value)">
-                                <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.85rem; color: var(--text-secondary);">
-                                    <span>0</span>
-                                    <span>1</span>
-                                    <span>2</span>
-                                    <span>3</span>
-                                    <span>4</span>
-                                    <span>5</span>
+                                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                                    <input type="range" id="servoSlider" min="0" max="180" step="1" value="90" style="flex: 1; cursor: pointer;" oninput="updateServoValue(this.value)">
+                                    <input type="number" id="servoNumberInput" min="0" max="180" value="90" class="form-control" style="width: 80px; text-align: center; padding: 5px;" oninput="updateServoFromNumber(this.value)">
+                                    <span style="color: var(--text-secondary); font-size: 0.9rem;">°</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                    <button type="button" class="btn-secondary" style="flex: 1; padding: 8px; margin: 0;" onclick="setServoPosition(0)">0°</button>
+                                    <button type="button" class="btn-secondary" style="flex: 1; padding: 8px; margin: 0;" onclick="setServoPosition(45)">45°</button>
+                                    <button type="button" class="btn-secondary" style="flex: 1; padding: 8px; margin: 0;" onclick="setServoPosition(90)">90°</button>
+                                    <button type="button" class="btn-secondary" style="flex: 1; padding: 8px; margin: 0;" onclick="setServoPosition(135)">135°</button>
+                                    <button type="button" class="btn-secondary" style="flex: 1; padding: 8px; margin: 0;" onclick="setServoPosition(180)">180°</button>
                                 </div>
                             </div>
                             <small id="commandValueHint" class="form-hint"></small>
@@ -2347,6 +2350,7 @@
                 });
                 
                 if (!response.ok) {
+
                     throw new Error(`Ошибка сервера: ${response.status}`);
                 }
                 
@@ -3204,8 +3208,9 @@
             if (action === 'set_servo_position') {
                 valueInput.style.display = 'none';
                 servoSliderContainer.style.display = 'block';
-                valueHint.textContent = 'Выберите позицию сервопривода от 0 до 5';
-                valueInput.value = document.getElementById('servoSlider').value;
+                valueHint.textContent = 'Используйте кнопки для быстрого выбора популярных позиций или введите точное значение';
+                // Set default value to 90 degrees
+                setServoPosition(90);
                 return;
             }
 
@@ -3228,6 +3233,22 @@
 
         function updateServoValue(value) {
             document.getElementById('commandValue').value = value;
+            document.getElementById('servoNumberInput').value = value;
+        }
+
+        function updateServoFromNumber(value) {
+            // Validate range
+            const numValue = parseInt(value);
+            if (numValue >= 0 && numValue <= 180) {
+                document.getElementById('commandValue').value = numValue;
+                document.getElementById('servoSlider').value = numValue;
+            }
+        }
+
+        function setServoPosition(position) {
+            document.getElementById('commandValue').value = position;
+            document.getElementById('servoSlider').value = position;
+            document.getElementById('servoNumberInput').value = position;
         }
 
         async function submitCommand() {
