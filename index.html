@@ -431,6 +431,49 @@
             margin-top: 5px;
         }
 
+        .device-limits {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(168, 85, 247, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-purple);
+        }
+
+        .limits-title {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .limits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .limit-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+
+        .limit-icon {
+            font-size: 1rem;
+        }
+
+        .limit-value {
+            color: var(--accent-purple);
+            font-weight: 600;
+        }
+
+        .limit-label {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
         .error-message {
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid var(--accent-red);
@@ -1816,6 +1859,10 @@
                 document.getElementById('totalDevices').textContent = allDevices.length;
                 document.getElementById('onlineDevices').textContent = 
                     allDevices.filter(d => d.status === 'online').length;
+                // Обновляем общее количество показаний из API
+                document.getElementById('totalReadings').textContent = data.count_total_readings || 0;
+                // Обновляем общее количество тревог из API
+                document.getElementById('totalAlerts').textContent = data.count_total_alerts || 0;
 
                 // Render devices
                 renderDevices(allDevices);
@@ -1871,6 +1918,10 @@
                     <div class="last-reading" id="last-reading-${device.id}">
                         <div class="reading-temp">Загрузка...</div>
                     </div>
+                    <div class="device-limits" id="device-limits-${device.id}" style="display: none;">
+                        <div class="limits-title">⚙️ Предельные значения</div>
+                        <div class="limits-grid" id="limits-grid-${device.id}"></div>
+                    </div>
                     ${device.last_seen ? `
                         <div class="reading-time">
                             Последняя активность: ${formatDate(device.last_seen)}
@@ -1918,6 +1969,9 @@
 
                 // Load last reading
                 await loadLastReading(deviceId);
+                
+                // Load device limits
+                await loadDeviceLimits(deviceId);
 
             } catch (error) {
                 console.error(`Error loading details for device ${deviceId}:`, error);
@@ -1953,12 +2007,70 @@
             }
         }
 
+        // Load device limits
+        async function loadDeviceLimits(deviceId) {
+            try {
+                const response = await fetch(`${API_BASE}/devices/${deviceId}/values`);
+                if (!response.ok) return;
+                
+                const data = await response.json();
+                const limitsContainer = document.getElementById(`device-limits-${deviceId}`);
+                const limitsGrid = document.getElementById(`limits-grid-${deviceId}`);
+                
+                if (data.values && Object.keys(data.values).length > 0) {
+                    const values = data.values;
+                    let limitsHtml = '';
+                    
+                    if (values.temperature_limit !== undefined) {
+                        limitsHtml += `
+                            <div class="limit-item">
+                                <span class="limit-icon">🌡️</span>
+                                <span class="limit-value">${values.temperature_limit}°C</span>
+                            </div>
+                        `;
+                    }
+                    
+                    if (values.humidity_limit !== undefined) {
+                        limitsHtml += `
+                            <div class="limit-item">
+                                <span class="limit-icon">💧</span>
+                                <span class="limit-value">${values.humidity_limit}%</span>
+                            </div>
+                        `;
+                    }
+                    
+                    if (values.fire_limit !== undefined) {
+                        limitsHtml += `
+                            <div class="limit-item">
+                                <span class="limit-icon">🔥</span>
+                                <span class="limit-value">${values.fire_limit}</span>
+                            </div>
+                        `;
+                    }
+                    
+                    if (values.servo_position !== undefined) {
+                        limitsHtml += `
+                            <div class="limit-item">
+                                <span class="limit-icon">🔧</span>
+                                <span class="limit-value">${values.servo_position}°</span>
+                            </div>
+                        `;
+                    }
+                    
+                    if (limitsHtml) {
+                        limitsGrid.innerHTML = limitsHtml;
+                        limitsContainer.style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error(`Error loading limits for device ${deviceId}:`, error);
+            }
+        }
+
         // Load readings for charts
         async function loadReadingsForCharts() {
             try {
                 const timeframe = document.getElementById('timeframeFilter').value;
-                let totalReadings = 0;
-                let totalAlerts = 0;
 
                 const tempDatasets = [];
                 const humidityDatasets = [];
@@ -1974,18 +2086,6 @@
                     if (!response.ok) continue;
                     
                     const data = await response.json();
-                    totalReadings += data.total || 0;
-
-                    // Get alerts
-                    try {
-                        const alertsResponse = await fetch(`${API_BASE}/alerts/${device.id}/alerts`);
-                        if (alertsResponse.ok) {
-                            const alertsData = await alertsResponse.json();
-                            totalAlerts += alertsData.total || 0;
-                        }
-                    } catch (e) {
-                        console.log('No alerts endpoint or error:', e);
-                    }
 
                     if (data.readings && data.readings.length > 0) {
                         // Temperature data
@@ -2060,10 +2160,6 @@
                         }
                     }
                 }
-
-                // Update stats
-                document.getElementById('totalReadings').textContent = totalReadings;
-                document.getElementById('totalAlerts').textContent = totalAlerts;
 
                 // Update temperature chart with time-based scale
                 temperatureChart.options.scales.x = {

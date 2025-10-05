@@ -63,9 +63,14 @@ async def get_all_devices(
         query = query.filter(Device.status == status)
     
     devices = query.limit(limit).all()
+
+    count_readings = db.query(SensorReading).filter(SensorReading.device_id.in_([d.id for d in devices])).count()
+    count_alerts = db.query(Alert).filter(Alert.device_id.in_([d.id for d in devices])).count()
     
     return {
         "total": len(devices),
+        "count_total_readings": count_readings,
+        "count_total_alerts": count_alerts,
         "devices": [
             {
                 "id": d.id,
