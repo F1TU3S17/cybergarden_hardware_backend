@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import Response
 from sqlalchemy import case
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -14,6 +15,7 @@ from app.models.device_limits import DeviceValues
 from app.models.sensor_reading import ReadingBase, SensorReading
 from app.models.alert import Alert
 from app.models.command import Command
+from app.service.csv_service import export_sensor_readings_to_csv
 
 
 router = APIRouter(prefix="/devices", tags=["devices"])
@@ -368,3 +370,55 @@ async def get_device_values(
         "device_name": device.name,
         "values": device_values
     }
+
+
+@router.get("/{device_id}/sensor-readings/export/csv")
+async def export_device_sensor_readings_csv(
+    device_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Экспортировать все показания датчиков устройства в CSV формате.
+    
+    Возвращает CSV файл со всеми показаниями датчиков заданного устройства.
+    CSV содержит колонки: id, device_id, sensor_type, value, unit, timestamp.
+    
+    Args:
+        device_id: Уникальный идентификатор устройства
+        db: Сессия базы данных
+    
+    Returns:
+        Response: CSV файл с MIME типом text/csv
+        
+    Raises:
+        HTTPException 404: Если устройство не найдено
+        
+    Пример:
+        GET /api/v1/devices/550e8400-e29b-41d4-a716-446655440000/sensor-readings/export/csv
+        
+    Response Headers:
+        Content-Type: text/csv; charset=utf-8
+        Content-Disposition: attachment; filename="device_{device_id}_sensor_readings.csv"
+    """
+    # Проверяем существование устройства
+    device = db.query(Device).filter(Device.id == device_id).first()
+    
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+    
+    # Получаем все показания датчиков для данного устройства
+    readings = db.query(SensorReading).filter(
+        SensorReading.device_id == device_id
+    ).order_by(SensorReading.timestamp.desc()).all()
+    
+    # Экспортируем в CSV
+    csv_content = export_sensor_readings_to_csv(readings)
+    
+    # Возвращаем как файл для скачивания
+    return Response(
+        content=csv_content,
+        media_type="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": f'attachment; filename="device_{device_id}_sensor_readings.csv"'
+        }
+    )

@@ -1934,6 +1934,10 @@
                         <span class="icon">🤖</span>
                         <span>AI Аналитика</span>
                     </button>
+                    <button class="btn-ai-analytics" onclick="event.stopPropagation(); exportDeviceToCSV('${device.id}')" style="background: linear-gradient(135deg, var(--accent-green), #059669); margin-top: 10px;">
+                        <span class="icon">📥</span>
+                        <span>Выгрузить в CSV</span>
+                    </button>
                 </div>
             `).join('');
 
@@ -2402,6 +2406,52 @@
         function closeAnalyticsModal() {
             const modal = document.getElementById('analyticsModal');
             modal.classList.remove('show');
+        }
+
+        // Export device sensor readings to CSV
+        async function exportDeviceToCSV(deviceId) {
+            try {
+                // Show loading indicator (optional)
+                const deviceCard = document.querySelector(`[onclick*="${deviceId}"]`)?.closest('.device-card');
+                if (deviceCard) {
+                    const originalContent = deviceCard.innerHTML;
+                    // Could add loading state here if desired
+                }
+
+                // Request CSV file from API
+                const response = await fetch(`${API_BASE}/devices/${deviceId}/sensor-readings/export/csv`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                // Get the CSV content as blob
+                const blob = await response.blob();
+                
+                // Create a temporary URL for the blob
+                const url = window.URL.createObjectURL(blob);
+                
+                // Create a temporary link element and trigger download
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `device_${deviceId}_sensor_readings.csv`;
+                
+                // Append to body, click, and remove
+                document.body.appendChild(a);
+                a.click();
+                
+                // Cleanup
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                // Show success message (optional)
+                console.log(`CSV файл для устройства ${deviceId} успешно загружен`);
+                
+            } catch (error) {
+                console.error('Ошибка при экспорте CSV:', error);
+                alert('Не удалось выгрузить данные в CSV. Попробуйте позже.');
+            }
         }
 
         // Modal functions
