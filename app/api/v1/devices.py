@@ -8,8 +8,12 @@ from app.enums.device_status import DeviceStatus
 from app.enums.sensor_type import SensorType
 from app.enums.timeframe import TimeFrame
 from app.db.session import get_db
+from app.db.redis_client import RedisClient, get_redis
 from app.models.device import Device
+from app.models.device_limits import DeviceValues
 from app.models.sensor_reading import ReadingBase, SensorReading
+from app.models.alert import Alert
+from app.models.command import Command
 
 
 router = APIRouter(prefix="/devices", tags=["devices"])
@@ -88,13 +92,17 @@ async def get_device(device_id: str, db: Session = Depends(get_db)):
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
     
-    # Используем relationships для получения связанных данных
+    # Используем SQL запросы для подсчета вместо загрузки всех данных
+    readings_count = db.query(SensorReading).filter(SensorReading.device_id == device_id).count()
+    alerts_count = db.query(Alert).filter(Alert.device_id == device_id).count()
+    commands_count = db.query(Command).filter(Command.device_id == device_id).count()
+    
     return {
         'device': device,
         # Связанные данные через relationships
-        "readings_count": len(device.readings),
-        "alerts_count": len(device.alerts),
-        "commands_count": len(device.commands)
+        "readings_count": readings_count,
+        "alerts_count": alerts_count,
+        "commands_count": commands_count
     }
 
 
@@ -210,46 +218,51 @@ async def get_device_readings(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
-    readings = device.readings[-limit:]  # последние N записей
+    # Строим SQL запрос вместо загрузки всех данных в память
+    query = db.query(SensorReading).filter(SensorReading.device_id == device_id)
     
+    # Фильтр по типу датчика
     if sensor_type:
-        match sensor_type:
-            case SensorType.TEMPERATURE:
-                readings = [r for r in readings if r.sensor_type == SensorType.TEMPERATURE]
-            case SensorType.HUMIDITY:
-                readings = [r for r in readings if r.sensor_type == SensorType.HUMIDITY]
-            case SensorType.ALERT:
-                readings = [r for r in readings if r.sensor_type == SensorType.ALERT]
-            case SensorType.FIRE:
-                readings = [r for r in readings if r.sensor_type == SensorType.FIRE]
-            case _:
-                raise HTTPException(status_code=400, detail="Invalid sensor type")
+        query = query.filter(SensorReading.sensor_type == sensor_type)
 
+    # Фильтр по времени
     if timeframe:
+        time_delta = None
         match timeframe:
             case TimeFrame.ONE_HOUR:
-                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(hours=1)]
+                time_delta = timedelta(hours=1)
             case TimeFrame.THREE_HOURS:
-                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(hours=3)]
+                time_delta = timedelta(hours=3)
             case TimeFrame.SIX_HOURS:
-                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(hours=6)]
-            case TimeFrame.TWELVE_HOURS:
-                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(hours=12)]
+                time_delta = timedelta(hours=6)
             case TimeFrame.EIGHT_HOURS:
-                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(hours=8)]
+                time_delta = timedelta(hours=8)
+            case TimeFrame.TWELVE_HOURS:
+                time_delta = timedelta(hours=12)
             case TimeFrame.ONE_DAY:
-                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(days=1)]
+                time_delta = timedelta(days=1)
             case TimeFrame.SEVEN_DAYS:
-                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(days=7)]
+                time_delta = timedelta(days=7)
             case TimeFrame.THIRTY_DAYS:
-                readings = [r for r in readings if r.timestamp >= datetime.now() - timedelta(days=30)]
+                time_delta = timedelta(days=30)
             case _:
                 raise HTTPException(status_code=400, detail="Invalid timeframe")
+        
+        if time_delta:
+            cutoff_time = datetime.now() - time_delta
+            query = query.filter(SensorReading.timestamp >= cutoff_time)
+
+    # Получаем общее количество записей (без limit)
+    total_count = query.count()
+    
+    # Сортируем по времени (последние первыми) и применяем limit
+    readings = query.order_by(SensorReading.timestamp.desc()).limit(limit).all()
 
     return {
         "device_id": device_id,
         "device_name": device.name,
-        "total": len(readings),
+        "total": total_count,
+        "returned": len(readings),
         "readings": [
             {
                 "id": r.id,
@@ -263,4 +276,90 @@ async def get_device_readings(
     }
 
 
+@router.post("/{device_id}/values", status_code=200)
+async def set_device_values(
+    values: DeviceValues,
+    db: Session = Depends(get_db),
+    redis: RedisClient = Depends(get_redis)
+):
+    """
+    Установить значения устройства в Redis.
+    
+    Значения сохраняются в Redis для быстрого доступа и используются
+    устройствами для получения текущих настроек.
+    """
+    # Проверяем существование устройства в БД
+    device = db.query(Device).filter(Device.id == values.device_id).first()
+  
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
 
+    # Формируем словарь только с переданными значениями
+    device_values = {}
+    if values.temperature_limit is not None:
+        device_values["temperature_limit"] = values.temperature_limit
+    if values.humidity_limit is not None:
+        device_values["humidity_limit"] = values.humidity_limit
+    if values.fire_limit is not None:
+        device_values["fire_limit"] = values.fire_limit
+    if values.servo_position is not None:
+        device_values["servo_position"] = values.servo_position
+
+    # Сохраняем в Redis
+    success = redis.set_device_values(values.device_id, device_values)
+    
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to save device values to Redis")
+    
+    return {
+        "success": True,
+        "device_id": values.device_id,
+        "values": device_values,
+        "message": "Device values successfully saved to Redis"
+    }
+
+
+@router.get("/{device_id}/values", status_code=200)
+async def get_device_values(
+    device_id: str,
+    db: Session = Depends(get_db),
+    redis: RedisClient = Depends(get_redis)
+):
+    """
+    Получить текущие значения устройства из Redis.
+    
+    Возвращает все сохраненные настройки устройства (лимиты и позиции).
+    
+    Example:
+        GET /api/v1/devices/550e8400-e29b-41d4-a716-446655440000/values
+        
+        Response:
+        {
+            "device_id": "550e8400-e29b-41d4-a716-446655440000",
+            "device_name": "Sensor_001",
+            "values": {
+                "temperature_limit": 25.0,
+                "humidity_limit": 60.0,
+                "fire_limit": 100.0,
+                "servo_position": 90
+            }
+        }
+    """
+    # Проверяем существование устройства в БД
+    device = db.query(Device).filter(Device.id == device_id).first()
+    
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+    
+    # Получаем значения из Redis
+    device_values = redis.get_device_values(device_id)
+    
+    if device_values is None:
+        # Если в Redis нет данных, возвращаем пустой объект
+        device_values = {}
+    
+    return {
+        "device_id": device_id,
+        "device_name": device.name,
+        "values": device_values
+    }

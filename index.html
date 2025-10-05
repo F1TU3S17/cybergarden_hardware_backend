@@ -1050,6 +1050,61 @@
             box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
         }
 
+        /* Slider styles */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-track {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        input[type="range"]::-moz-range-track {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 3px solid var(--accent-blue);
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 3px solid var(--accent-blue);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            border-color: var(--accent-purple);
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            border-color: var(--accent-purple);
+        }
+
         .form-hint {
             display: block;
             color: var(--text-secondary);
@@ -1480,6 +1535,7 @@
                 <!-- Tabs -->
                 <div class="filter-tabs" style="margin-bottom: 20px;">
                     <button class="filter-tab active" onclick="switchDeviceTab('logs')">� Показания</button>
+                    <button class="filter-tab" onclick="switchDeviceTab('alerts')">⚠️ Тревоги</button>
                     <button class="filter-tab" onclick="switchDeviceTab('commands')">⚡ Команды</button>
                     <button class="filter-tab" onclick="switchDeviceTab('add-command')">➕ Добавить команду</button>
                 </div>
@@ -1491,6 +1547,15 @@
                         <p>Загрузка показаний...</p>
                     </div>
                     <div id="logsList" class="readings-list"></div>
+                </div>
+
+                <!-- Alerts Tab -->
+                <div id="alertsTabContent" class="tab-content" style="display: none;">
+                    <div id="alertsTabLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Загрузка тревог...</p>
+                    </div>
+                    <div id="alertsTabList" class="alerts-list"></div>
                 </div>
 
                 <!-- Commands Tab -->
@@ -1518,7 +1583,7 @@
                             <select id="commandAction" class="form-control" onchange="updateCommandValueField()">
                                 <option value="">Выберите команду...</option>
                                 <option value="toggle_alert">🔔 Переключить тревогу</option>
-                                <option value="toggle_servo">🔧 Изменить состояние сервопривода</option>
+                                <option value="set_servo_position">🔧 Установить позицию сервопривода</option>
                                 <option value="set_temerature_limit">🌡️ Установить лимит температуры</option>
                                 <option value="set_fire_limit">🔥 Установить лимит огня</option>
                                 <option value="set_humidity_limit">💧 Установить лимит влажности</option>
@@ -1528,6 +1593,17 @@
                         <div class="form-group" id="commandValueGroup" style="display: none;">
                             <label for="commandValue">Значение</label>
                             <input type="text" id="commandValue" class="form-control" placeholder="Введите значение">
+                            <div id="servoSliderContainer" style="display: none; margin-top: 10px;">
+                                <input type="range" id="servoSlider" min="0" max="5" step="1" value="0" style="width: 100%; cursor: pointer;" oninput="updateServoValue(this.value)">
+                                <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.85rem; color: var(--text-secondary);">
+                                    <span>0</span>
+                                    <span>1</span>
+                                    <span>2</span>
+                                    <span>3</span>
+                                    <span>4</span>
+                                    <span>5</span>
+                                </div>
+                            </div>
                             <small id="commandValueHint" class="form-hint"></small>
                         </div>
 
@@ -1768,7 +1844,7 @@
             }
 
             container.innerHTML = devices.map(device => `
-                <div class="device-card" onclick="openDeviceControlModal('${device.id}', '${device.name}')">
+                <div class="device-card" onclick="openDeviceControlModal('${device.id}', '${device.name}', 'logs')">
                     <div class="device-header">
                         <div class="device-name">${device.name}</div>
                         <div class="device-status status-${device.status}">
@@ -1779,15 +1855,15 @@
                         📍 ${device.location || 'Не указано'}
                     </div>
                     <div class="device-metrics">
-                        <div class="metric" onclick="event.stopPropagation(); openReadingsModal('${device.id}', '${device.name}')" style="cursor: pointer;">
+                        <div class="metric" onclick="event.stopPropagation(); openDeviceControlModal('${device.id}', '${device.name}', 'logs')" style="cursor: pointer;">
                             <div class="metric-value" id="readings-${device.id}">-</div>
                             <div class="metric-label">Показания</div>
                         </div>
-                        <div class="metric" onclick="event.stopPropagation(); openAlertsModal('${device.id}')" style="cursor: pointer;">
+                        <div class="metric" onclick="event.stopPropagation(); openDeviceControlModal('${device.id}', '${device.name}', 'alerts')" style="cursor: pointer;">
                             <div class="metric-value" id="alerts-${device.id}" style="color: var(--accent-orange);">-</div>
                             <div class="metric-label">Тревоги</div>
                         </div>
-                        <div class="metric">
+                        <div class="metric" onclick="event.stopPropagation(); openDeviceControlModal('${device.id}', '${device.name}', 'commands')" style="cursor: pointer;">
                             <div class="metric-value" id="commands-${device.id}">-</div>
                             <div class="metric-label">Команды</div>
                         </div>
@@ -2738,18 +2814,20 @@
         let currentCommandsFilter = 'ALL';
         let allCommands = [];
 
-        async function openDeviceControlModal(deviceId, deviceName) {
+        async function openDeviceControlModal(deviceId, deviceName, tabName = 'logs') {
             currentDeviceId = deviceId;
             document.getElementById('deviceControlTitle').textContent = deviceName;
             document.getElementById('deviceControlId').textContent = deviceId;
             document.getElementById('deviceControlModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
             
-            // Switch to logs tab by default
-            switchDeviceTab('logs');
+            // Switch to specified tab
+            switchDeviceTab(tabName);
         }
 
         function closeDeviceControlModal() {
             document.getElementById('deviceControlModal').classList.remove('show');
+            document.body.style.overflow = 'auto';
             currentDeviceId = null;
             currentCommandsFilter = 'ALL';
             resetCommandForm();
@@ -2773,13 +2851,17 @@
                 document.getElementById('logsTab').style.display = 'block';
                 document.querySelectorAll('#deviceControlModal .filter-tab')[0].classList.add('active');
                 loadDeviceLogs(); // Load device readings
+            } else if (tabName === 'alerts') {
+                document.getElementById('alertsTabContent').style.display = 'block';
+                document.querySelectorAll('#deviceControlModal .filter-tab')[1].classList.add('active');
+                loadDeviceAlerts();
             } else if (tabName === 'commands') {
                 document.getElementById('commandsTab').style.display = 'block';
-                document.querySelectorAll('#deviceControlModal .filter-tab')[1].classList.add('active');
+                document.querySelectorAll('#deviceControlModal .filter-tab')[2].classList.add('active');
                 loadDeviceCommands();
             } else if (tabName === 'add-command') {
                 document.getElementById('addCommandTab').style.display = 'block';
-                document.querySelectorAll('#deviceControlModal .filter-tab')[2].classList.add('active');
+                document.querySelectorAll('#deviceControlModal .filter-tab')[3].classList.add('active');
             }
         }
 
@@ -2821,6 +2903,37 @@
                 logsLoading.style.display = 'none';
                 logsList.innerHTML = '<div class="error-message">❌ Ошибка загрузки данных</div>';
                 console.error('Error loading readings:', error);
+            }
+        }
+
+        // Load device alerts
+        async function loadDeviceAlerts() {
+            const alertsLoading = document.getElementById('alertsTabLoading');
+            const alertsList = document.getElementById('alertsTabList');
+            
+            alertsLoading.style.display = 'block';
+            alertsList.innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_BASE}/alerts?device_id=${currentDeviceId}&limit=100`);
+                if (!response.ok) {
+                    throw new Error('Failed to load alerts');
+                }
+                
+                const data = await response.json();
+                const alerts = data.alerts || [];
+                alertsLoading.style.display = 'none';
+
+                if (alerts.length === 0) {
+                    alertsList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✅</div><p>Нет тревог для этого устройства</p></div>';
+                    return;
+                }
+
+                alertsList.innerHTML = alerts.map(alert => renderAlert(alert)).join('');
+            } catch (error) {
+                alertsLoading.style.display = 'none';
+                alertsList.innerHTML = '<div class="error-message">❌ Ошибка загрузки тревог</div>';
+                console.error('Error loading alerts:', error);
             }
         }
 
@@ -2904,6 +3017,7 @@
         function getCommandActionName(action) {
             const names = {
                 'toggle_alert': '🔔 Переключить тревогу',
+                'set_servo_position': '🔧 Установить позицию сервопривода',
                 'toggle_servo': '🔧 Изменить состояние сервопривода',
                 'set_temerature_limit': '🌡️ Установить лимит температуры',
                 'set_fire_limit': '🔥 Установить лимит огня',
@@ -2973,19 +3087,35 @@
             const valueGroup = document.getElementById('commandValueGroup');
             const valueInput = document.getElementById('commandValue');
             const valueHint = document.getElementById('commandValueHint');
+            const servoSliderContainer = document.getElementById('servoSliderContainer');
 
             if (!action) {
                 valueGroup.style.display = 'none';
+                servoSliderContainer.style.display = 'none';
                 return;
             }
 
             // Hide value field for toggle commands
-            if (action === 'toggle_alert' || action === 'toggle_servo') {
+            if (action === 'toggle_alert') {
                 valueGroup.style.display = 'none';
+                servoSliderContainer.style.display = 'none';
                 return;
             }
 
             valueGroup.style.display = 'block';
+
+            // Show slider for servo position
+            if (action === 'set_servo_position') {
+                valueInput.style.display = 'none';
+                servoSliderContainer.style.display = 'block';
+                valueHint.textContent = 'Выберите позицию сервопривода от 0 до 5';
+                valueInput.value = document.getElementById('servoSlider').value;
+                return;
+            }
+
+            // Hide slider for other commands
+            valueInput.style.display = 'block';
+            servoSliderContainer.style.display = 'none';
 
             // Set hints based on command type
             const hints = {
@@ -2998,6 +3128,10 @@
 
             // Set input type as number for limit commands
             valueInput.type = 'number';
+        }
+
+        function updateServoValue(value) {
+            document.getElementById('commandValue').value = value;
         }
 
         async function submitCommand() {
@@ -3016,7 +3150,7 @@
             }
 
             // Check if value is required (not for toggle commands)
-            const isToggleCommand = action === 'toggle_alert' || action === 'toggle_servo';
+            const isToggleCommand = action === 'toggle_alert';
             if (!isToggleCommand && !valueStr) {
                 messageEl.className = 'form-message error';
                 messageEl.textContent = '❌ Пожалуйста, введите значение для команды';

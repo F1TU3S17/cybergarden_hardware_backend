@@ -52,6 +52,13 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./test.db"
     AI_API_KEY: str  
     system_prompt: str = "You are a helpful assistant for analyzing IoT monitoring data. You will receive JSON data from various sensors and devices. Your task is to identify anomalies, trends, and potential issues based on the data provided. Provide clear, concise insights and recommendations for any detected problems. Send analytical situation and recommendations to the user. Response language is Russian."
+    
+    # Redis settings
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+    REDIS_PASSWORD: str | None = None
+    REDIS_DECODE_RESPONSES: bool = True
 
 
     class Config:
